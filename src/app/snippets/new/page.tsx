@@ -1,30 +1,13 @@
-import {db} from "@/app/db";
-import {redirect} from "next/navigation";
-
+'use client';
+import { createSnippet } from "@/actions";
+import { useFormState } from "react-dom";
 
 export default function SnippetCreatePage () {
-
-    async function createSnippet(formData: FormData) {
-        // This function needs to be talking to server
-        'use server';
-        // Receive inputs and validate them
-        const title = formData.get('title') as string;
-        const code = formData.get('code') as string;
-        // Create new snippet to the database
-        const snippet = await db.snippet.create({
-            data: {
-                title,
-                code
-            }
-        })
-        console.log(snippet);
-        // Redirect the user to the root route
-        redirect('/');
-    }
+    const [formState, action] = useFormState(createSnippet, {message: ''});
 
 
     return (
-        <form action={createSnippet}>
+        <form action={action}>
             <h3 className="font-bold m-3">Create a Snippet</h3>
             <div className="flex flex-col gap-4">
                 <div className="flex gap-4">
@@ -35,7 +18,7 @@ export default function SnippetCreatePage () {
                         name="title"
                         className="border rounded p-2 w-full"
                         id="title"
-                        required
+                        // required
                     />
                 </div>
 
@@ -47,9 +30,10 @@ export default function SnippetCreatePage () {
                         name="code"
                         className="border rounded p-2 w-full"
                         id="code"
-                        required
+                        // required
                     />
                 </div>
+                {formState.message ? <div className="my-2 p-2 bg-red-200 border rounded border-red-200">{formState.message}</div> : null}
 
                 <button type="submit" className="rounded p-2 bg-blue-200">
                     Create
